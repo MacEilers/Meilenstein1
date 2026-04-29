@@ -59,7 +59,7 @@ public class Programm
             
             if (spieler[spielzug % 2].Position.Ladder) 
             {
-                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,3) ;
+                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,3) ;
                 Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
                 spieler[spielzug % 2].Schritte += 3;
                 Leitern(spieler, spielzug);
@@ -104,7 +104,7 @@ public class Programm
                 }
                 
                 
-                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,wurf) ;
+                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,wurf) ;
 
                 
                 if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
@@ -145,13 +145,13 @@ public class Programm
 
         
 
-        public FieldNode Ziehen(FieldNode f,int Anzahl)
+        public FieldNode Ziehen(FieldNode start ,FieldNode f,int Anzahl)
         {
             if (f != last) // Wenn am Ende Bleibt er einfach stehen (3 vor ende 5 Gewürfelt -> Gewonnen )??
             {
                 if (Anzahl > 1)
                 {
-                    return Ziehen(f.Next, Anzahl - 1);
+                    return Ziehen(start,f.Next, Anzahl - 1);
                 }
                 else
                 {
@@ -162,7 +162,7 @@ public class Programm
             }
             else
             {
-                return last;
+                return ((Anzahl>1)?start:last);
             }
             
         }
