@@ -61,16 +61,19 @@ public class Programm
             else if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
             {
                 spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,1) ;
+                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein Feld zurückgegangen da das Feld schon besetzt war");
                 SchlangenUndLeitern(spieler, spielzug);
             }
             else if (spieler[spielzug % 2].Position.Ladder) 
             {
                 spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,3) ;
+                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
                 SchlangenUndLeitern(spieler, spielzug);
             }
             else if  (spieler[spielzug % 2].Position.Snake)
             {
                 spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,3);
+                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Schlange 3 Felder zurück gegeangen ");
                 SchlangenUndLeitern(spieler, spielzug);
 
             }
@@ -91,8 +94,8 @@ public class Programm
             while (spieler[0].Position != last||spieler[1].Position != last)
             {
                 int wurf = rnd.Next(0, 7);
-                
 
+                Console.WriteLine($"{spieler[spielzug % 2].Name} hat eine {wurf} gewürfeld");
                 if (wurf == 1)
                 {
                     Append(5);
@@ -109,6 +112,7 @@ public class Programm
                 
                 if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
                 {
+                    Console.WriteLine($"{spieler[spielzug % 2].Name} hat Gewonnen");
                     return;
                 }
 
@@ -117,6 +121,7 @@ public class Programm
                 
                 if (spieler[spielzug % 2].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
+                    Console.WriteLine($"{spieler[spielzug % 2].Name} hat Gewonnen");
                     return;
                 }
                 
@@ -129,11 +134,7 @@ public class Programm
             
         }
 
-        public bool GleichesFeld(Player[] spieler)
-        {
-            return ( spieler[0].Position == spieler[1].Position);
-
-        }
+        
 
         public FieldNode Ziehen(FieldNode f,int Anzahl)
         {
