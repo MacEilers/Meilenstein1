@@ -88,7 +88,7 @@ public class Programm
 
             Player[] spieler ={new Player(n1,first),new Player(n2,first)};
             
-            while (spieler[0].Position != last||spieler[1].Position != last)
+            while (spieler[0].Position != last && spieler[1].Position != last)
             {
                 int wurf = rnd.Next(1, 7);
                 spieler[spielzug % 2].Schritte += wurf;
@@ -110,6 +110,7 @@ public class Programm
                 if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
                 {
                     Console.WriteLine($"{spieler[spielzug % 2].Name} hat nach {spieler[spielzug % 2].Throws} Würfen mit {spieler[spielzug % 2].Schritte} Schritten Gewonnen ");
+                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten Verloren  ");
                     return;
                 }
 
@@ -120,13 +121,15 @@ public class Programm
                 if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
                 {
                     spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,1) ;
-                    Console.WriteLine($"{spieler[spielzug % 2].Name} hat nach {spieler[spielzug % 2].Throws} Würfen mit {spieler[spielzug % 2].Schritte} Schritten Gewonnen ");
-                   spieler[spielzug % 2].Schritte -= 1;
+                    spieler[spielzug % 2].Schritte -= 1;
                    
                 }
                 
                 if (spieler[spielzug % 2].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
+                    Console.WriteLine($"{spieler[spielzug % 2].Name} hat nach {spieler[spielzug % 2].Throws} Würfen mit {spieler[spielzug % 2].Schritte} Schritten Gewonnen ");
+                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten Verloren  ");
+
                     return;
                 }
 
@@ -169,7 +172,7 @@ public class Programm
             {
                 if (Anzahl > 1)
                 {
-                    return Ziehen(f.Previous, Anzahl - 1);
+                    return ZurueckZiehen(f.Previous, Anzahl - 1);
                 }
                 else
                 {
