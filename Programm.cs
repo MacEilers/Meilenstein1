@@ -47,6 +47,40 @@ public class Programm
         
         }
 
+        public bool gleichesFeld(Player[] spieler)
+        {
+            return (spieler[0].Position == spieler[1].Position);
+        }
+
+        public void SchlangenUndLeitern(Player[] spieler, int spielzug)
+        {
+            if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
+            {
+                return ;
+            }
+            else if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
+            {
+                spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,1) ;
+                SchlangenUndLeitern(spieler, spielzug);
+            }
+            else if (spieler[spielzug % 2].Position.Ladder) 
+            {
+                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,3) ;
+                SchlangenUndLeitern(spieler, spielzug);
+            }
+            else if  (spieler[spielzug % 2].Position.Snake)
+            {
+                spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,3);
+                SchlangenUndLeitern(spieler, spielzug);
+
+            }
+            else // Wenn sich nicht bewegt return sonst wird weiter bewegt 
+            {
+                return;
+            }
+            
+
+        }
         public void Spielen(string n1, string n2)
         {
             Random rnd = new Random();
@@ -56,54 +90,37 @@ public class Programm
             
             while (spieler[0].Position != last||spieler[1].Position != last)
             {
-                int wurf = rnd.Next(1, 7);
+                int wurf = rnd.Next(0, 7);
+                
 
                 if (wurf == 1)
                 {
                     Append(5);
+                }
+                else if (wurf == 6)
+                {
+                    InsertBevor(spieler[0].Position,5);
                 }
                 
                 
                 
                 spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,wurf) ;
 
-                if (spieler[spielzug % 2].Position == last)
-                {
-                    return;
-                }
-
+                
                 if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
                 {
                     return;
                 }
 
-
-                while (spieler[spielzug % 2].Position.Ladder || spieler[spielzug % 2].Position.Snake)
+                SchlangenUndLeitern(spieler, spielzug);// Bewegt sich rekusiv über Leitern etc.
+                
+                
+                if (spieler[spielzug % 2].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
-                    if (spieler[spielzug % 2].Position.Ladder)
-                    {
-                        spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,3) ;
-                    }
-                    else
-                    {
-                        spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,3) ;
-
-                    }
-                    if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
-                    {
-                        return;
-                    }
-                    
+                    return;
                 }
                 
-
-
-
-
-
-
-
-
+                
 
                 spielzug++;
             }
@@ -112,9 +129,15 @@ public class Programm
             
         }
 
+        public bool GleichesFeld(Player[] spieler)
+        {
+            return ( spieler[0].Position == spieler[1].Position);
+
+        }
+
         public FieldNode Ziehen(FieldNode f,int Anzahl)
         {
-            if (f != last)
+            if (f != last) // Wenn am Ende Bleibt er einfach stehen (3 vor ende 5 Gewürfelt -> Gewonnen )??
             {
                 if (Anzahl > 1)
                 {
@@ -177,21 +200,7 @@ public class Programm
         }
 
         // Methods:
-        public void Prepend() //  Ändern Prepend Bevor 
-        {
-            FieldNode newElement = new FieldNode(null, first);
-
-            if (first == null)
-            {
-                last = newElement;
-            }
-            else
-            {
-                first.Previous = newElement;
-            }
-
-            first = newElement;
-        }
+       
 
        
         public void Append(int Anzahl)
