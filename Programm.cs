@@ -4,7 +4,7 @@ public class Programm
 {
     public static void Main(string[] args)
     {
-        int Spielfeldgroese = 100;
+        int Spielfeldgroese = 10;
         GameField? GameField = new GameField(Spielfeldgroese);
         
         GameField.Spielen( "Spieler 1", "Spieler 2");
@@ -48,13 +48,13 @@ public class Programm
         
         }
 
-        public bool gleichesFeld(Player[] spieler)
+        private bool gleichesFeld(Player[] spieler)
         {
             return (spieler[0].Position == spieler[1].Position);
         }
 
 
-        public void Leitern(Player[] spieler, int spielzug)
+        private void Leitern(Player[] spieler, int spielzug)
         {
             
             if (spieler[spielzug % 2].Position.Ladder) 
@@ -66,7 +66,7 @@ public class Programm
                 
             }
         }
-        public void Schlangen(Player[] spieler, int spielzug)
+        private void Schlangen(Player[] spieler, int spielzug)
         {
             
              if  (spieler[spielzug % 2].Position.Snake)
@@ -145,10 +145,9 @@ public class Programm
 
         
 
-        public FieldNode Ziehen(FieldNode start ,FieldNode f,int Anzahl)
+        private FieldNode Ziehen(FieldNode start ,FieldNode f,int Anzahl)
         {
-            if (f != last) // Wenn am Ende Bleibt er einfach stehen (3 vor ende 5 Gewürfelt -> Gewonnen )??
-            {
+            if (f != last)  {
                 if (Anzahl > 1)
                 {
                     return Ziehen(start,f.Next, Anzahl - 1);
@@ -166,7 +165,7 @@ public class Programm
             }
             
         }
-        public FieldNode ZurueckZiehen(FieldNode f,int Anzahl)
+        private FieldNode ZurueckZiehen(FieldNode f,int Anzahl)
         {
             if (f != first)
             {
@@ -199,12 +198,12 @@ public class Programm
 
         // Read-only properties:
 
-        public FieldNode? First
+        private FieldNode? First
         {
             get { return first; }
         }
 
-        public FieldNode? Last
+        private FieldNode? Last
         {
             get { return last; }
         }
@@ -213,7 +212,7 @@ public class Programm
        
 
        
-        public void Append(int Anzahl)
+        private void Append(int Anzahl)
         {
             for (int i = 0; i < Anzahl; i++)
             {
@@ -240,7 +239,7 @@ public class Programm
 
         
 
-        public FieldNode InsertBevor(FieldNode previous, int Anzahl)
+        private FieldNode InsertBevor(FieldNode previous, int Anzahl)
         {
             FieldNode newElement = new FieldNode( previous.Previous, previous);
 
