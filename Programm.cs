@@ -4,30 +4,65 @@ public class Programm
 {
     public static void Main(string[] args)
     {
-        int Spielfeldgroese = 10;
+        int Spielfeldgroese = 1000;
         GameField? GameField = new GameField(Spielfeldgroese);
         
         GameField.Spielen( "Spieler 1", "Spieler 2");
+        
+        
+        // TO DO Leitern Schlange in Loops überarbeiten 
+        // Wenn starten zu zien auf Loop dann next is Loop.next
+        
     }
     
     class GameField
     {
         // Internal class:
-        
+
+        private static Random rnd = new Random();
+         
         internal class FieldNode
         {
-            Random rnd = new Random();
-            public bool Snake { get; }
-            public bool Ladder { get; }
+           
+            public bool Snake { set; get; }
+            public bool Ladder { set; get; }
+            public bool HasLoop { get; set; }
+            public bool LoopElement { get; set; }
+            
+            
             public FieldNode Next { get; set; }
             public FieldNode Previous { get; set; }
-
-            public FieldNode( FieldNode previous, FieldNode next)
+            public FieldNode LoopFirst { get; set; } = null;
+            public FieldNode LoopLast { get; set; } = null;
+            
+            public FieldNode( FieldNode previous, FieldNode next, bool canHaveLoops = true)
             {
-                
+
+                    LoopElement = !canHaveLoops;
                     int g =  rnd.Next(1, 7);
                     Snake = (1 == g);
                     Ladder = (2 == g);
+                    HasLoop = (3 == g);
+
+
+                    HasLoop = ((3 == g) && canHaveLoops); // in loops kann es keine Loops geben 
+                    if (HasLoop)
+                    {
+                        int n =  rnd.Next(1, 10);
+                        GameField? NewLoop = new GameField(n);
+                        LoopFirst= NewLoop.first;
+                        LoopLast = NewLoop.last;
+                        
+                        LoopLast.Next = next;
+                        LoopFirst.Previous = previous;
+
+                    }
+                   
+                        
+                       
+                    
+                   
+                    
                     Next = next;
                     Previous = previous;
             }
@@ -38,6 +73,7 @@ public class Programm
             public int Throws { get; set; } = 1;
             public int Schritte  { get; set; } = 0;
             public FieldNode? Position { get; set; } 
+            
 
             public Player(string name,FieldNode start)
             {
@@ -47,43 +83,18 @@ public class Programm
             }
         
         }
-
-        private bool gleichesFeld(Player[] spieler)
+        
+        
+        public GameField(int Spielfeldgroese, bool canHaveLoops = true)
         {
-            return (spieler[0].Position == spieler[1].Position);
+            Append(Spielfeldgroese, canHaveLoops);
+            
         }
-
-
-        private void Leitern(Player[] spieler, int spielzug)
+        
+        
+         public void Spielen(string n1, string n2)
         {
             
-            if (spieler[spielzug % 2].Position.Ladder) 
-            {
-                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,3) ;
-                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
-                spieler[spielzug % 2].Schritte += 3;
-                Leitern(spieler, spielzug);
-                
-            }
-        }
-        private void Schlangen(Player[] spieler, int spielzug)
-        {
-            
-             if  (spieler[spielzug % 2].Position.Snake)
-            {
-                spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,3);
-                spieler[spielzug % 2].Schritte -= 3;
-                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Schlange 3 Felder zurück gegeangen ");
-                Schlangen(spieler, spielzug);
-
-            }
-            
-            
-
-        }
-        public void Spielen(string n1, string n2)
-        {
-            Random rnd = new Random();
             int spielzug = 0;
 
             Player[] spieler ={new Player(n1,first),new Player(n2,first)};
@@ -95,27 +106,19 @@ public class Programm
 
                 Console.WriteLine($"{spieler[spielzug % 2].Name} hat eine {wurf} gewürfeld");
                 if (wurf == 1)
-                {
                     Append(5);
-                }
-                else if (wurf == 6)
-                {
-                    InsertBevor(spieler[0].Position,5);
-                }
+                 if (wurf == 6)
+                    InsertBevor(spieler[spielzug % 2].Position,5);
                 
                 
                 spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,wurf) ;
 
                 
-                if (spieler[spielzug % 2].Position == last)// Nach dem Würfeln am Ende 
+                if (spieler[spielzug % 2].Position != last)// Nach dem Würfeln am Ende 
                 {
-                    Console.WriteLine($"{spieler[spielzug % 2].Name} hat nach {spieler[spielzug % 2].Throws} Würfen mit {spieler[spielzug % 2].Schritte} Schritten Gewonnen ");
-                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten Verloren  ");
-                    return;
+                    Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
+                    Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
                 }
-
-                Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
-                Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
                 
                 
                 if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
@@ -140,14 +143,69 @@ public class Programm
             }
             
             
-            
         }
 
+        private bool gleichesFeld(Player[] spieler)
+        {
+            return (spieler[0].Position == spieler[1].Position);
+        }
+
+
+        private void Leitern(Player[] spieler, int spielzug)
+        {
+            
+            if (spieler[spielzug % 2].Position.Ladder)
+            {
+                //spieler[spielzug % 2].Position.Ladder = false;
+                // new leder 
+                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,3) ;
+                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
+                spieler[spielzug % 2].Schritte += 3;
+                Leitern(spieler, spielzug);
+                
+            }
+        }
+
+        
+        private void Schlangen(Player[] spieler, int spielzug)
+        {
+            
+             if  (spieler[spielzug % 2].Position.Snake)
+             {
+                 //spieler[spielzug % 2].Position.Snake = false;
+                 // Neue schlange 
+                spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,3);
+                spieler[spielzug % 2].Schritte -= 3;
+                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Schlange 3 Felder zurück gegeangen ");
+                Schlangen(spieler, spielzug);
+
+            }
+            
+            
+
+        }
+       
+        
         
 
         private FieldNode Ziehen(FieldNode start ,FieldNode f,int Anzahl)
         {
+
+
+           // Implementierung ziehen in Loops
+
+           if (start == f && start.HasLoop) // Ziehen hat auf der Loop begnonnen 
+           {
+               return Ziehen(start,f.LoopFirst, Anzahl - 1);
+               
+               
+               
+           }
+
+            
+            
             if (f != last)  {
+                
                 if (Anzahl > 1)
                 {
                     return Ziehen(start,f.Next, Anzahl - 1);
@@ -167,8 +225,12 @@ public class Programm
         }
         private FieldNode ZurueckZiehen(FieldNode f,int Anzahl)
         {
-            if (f != first)
+            
+            
+            
+            if (f != first )
             {
+                
                 if (Anzahl > 1)
                 {
                     return ZurueckZiehen(f.Previous, Anzahl - 1);
@@ -187,10 +249,7 @@ public class Programm
             
         }
 
-        public GameField(int Spielfeldgroese)
-        {
-            Append(Spielfeldgroese);
-        }
+        
         // Data fields:
 
         FieldNode? first = null;
@@ -208,15 +267,15 @@ public class Programm
             get { return last; }
         }
 
-        // Methods:
-       
 
+
+        
        
-        private void Append(int Anzahl)
+        private void Append(int Anzahl, bool canHaveLoops = true)
         {
             for (int i = 0; i < Anzahl; i++)
             {
-                FieldNode newElement = new FieldNode( last, null);
+                FieldNode newElement = new FieldNode( last, null, canHaveLoops);
 
                 if (last == null)
                 {
@@ -225,18 +284,19 @@ public class Programm
                 else
                 {
                     last.Next = newElement;
+                    if (last.HasLoop)
+                    {
+                        last.LoopLast.Next = newElement;
+                    }
                 }
 
                 last = newElement;
             }
+            
            
         }
-        
 
-        
-
-        
-
+       
         
 
         private FieldNode InsertBevor(FieldNode previous, int Anzahl)
@@ -250,6 +310,9 @@ public class Programm
             else
             {
                 previous.Previous.Next = newElement;
+
+                if (previous.Previous.HasLoop)
+                    previous.Previous.LoopFirst = newElement;
             }
 
             previous.Previous = newElement;
@@ -257,11 +320,14 @@ public class Programm
             if (Anzahl > 1)
             {
                 return (InsertBevor(newElement, Anzahl - 1));
+                
             }
-            else
-            {
-                return newElement;
-            }
+            
+                
+            return newElement;
+                
+                
+            
             
         }
 
