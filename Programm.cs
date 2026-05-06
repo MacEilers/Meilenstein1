@@ -166,8 +166,7 @@ public class Programm
                    
                     Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
                     Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
-                    if (spieler[spielzug%2].Position.Freeze) 
-                        spieler[spielzug%2].IsFrozen = true;
+                    
                 }
                 
                 
@@ -185,6 +184,8 @@ public class Programm
 
                     return;
                 }
+                    if (spieler[spielzug%2].Position.Freeze) 
+                        spieler[spielzug%2].IsFrozen = true;
                 }
 
 
