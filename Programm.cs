@@ -11,8 +11,6 @@ public class Programm
         GameField.Spielen( "Spieler 1", "Spieler 2");
         
         
-        // TO DO Leitern Schlange in Loops überarbeiten 
-        // Wenn starten zu zien auf Loop dann next is Loop.next
         
     }
     
@@ -142,18 +140,22 @@ public class Programm
             {
                 //falls Spieler gefreezed, überspringe diesen Spielzug
                 if(spieler[spielzug%2].IsFrozen) {
-                    System.Console.WriteLine($"{spieler[spielzug%2].Name} ist eingefroren");
+                    Console.WriteLine($"{spieler[spielzug%2].Name} ist eingefroren");
                     spieler[spielzug%2].IsFrozen = false;
                     spielzug++;
                     continue;
                 }
+                else
+                {
+                    
+                
                 int wurf = rnd.Next(1, 7);
                 spieler[spielzug % 2].Schritte += wurf;
 
                 Console.WriteLine($"{spieler[spielzug % 2].Name} hat eine {wurf} gewürfeld");
                 if (wurf == 1)
                     Append(5);
-                 if (wurf == 6)
+                if (wurf == 6)
                     InsertBevor(spieler[spielzug % 2].Position,5);
                 
                 
@@ -162,6 +164,7 @@ public class Programm
                 
                 if (spieler[spielzug % 2].Position != last)// Nach dem Würfeln am Ende 
                 {
+                   
                     Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
                     Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
                     if (spieler[spielzug%2].Position.Freeze) spieler[spielzug%2].IsFrozen = true; //Freezd Spieler wenn auf Freeze Feld am Ende
@@ -181,6 +184,7 @@ public class Programm
                     Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten Verloren  ");
 
                     return;
+                }
                 }
 
 
