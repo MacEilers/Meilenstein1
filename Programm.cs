@@ -142,7 +142,8 @@ public class Programm
                 if(spieler[spielzug%2].IsFrozen) {
                     Console.WriteLine($"{spieler[spielzug%2].Name} ist eingefroren");
                     spieler[spielzug%2].IsFrozen = false;
-                    
+                    spielzug++;
+                    continue;
                 }
                 else
                 {
@@ -163,10 +164,10 @@ public class Programm
                 
                 if (spieler[spielzug % 2].Position != last)// Nach dem Würfeln am Ende 
                 {
-                    if (spieler[spielzug%2].Position.Freeze) 
-                        spieler[spielzug%2].IsFrozen = true; //Freezd Spieler wenn auf Freeze Feld am Ende
+                   
                     Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
                     Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
+                    if (spieler[spielzug%2].Position.Freeze) spieler[spielzug%2].IsFrozen = true; //Freezd Spieler wenn auf Freeze Feld am Ende
                 }
                 
                 
