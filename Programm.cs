@@ -5,6 +5,7 @@ public class Programm
     public static void Main(string[] args)
     {
         int Spielfeldgroese = 100;
+
         GameField? GameField = new GameField(Spielfeldgroese);
         
         GameField.Spielen( "Spieler 1", "Spieler 2");
@@ -24,16 +25,17 @@ public class Programm
         internal class FieldNode
         {
            
-            public bool Snake { set; get; }
-            public bool Ladder { set; get; }
-            public bool HasLoop { get; set; }
-            public bool LoopElement { get; set; }
+            internal bool Snake { set; get; }
+            internal bool Ladder { set; get; }
+            internal bool Freeze {get; set;}
+            internal bool HasLoop { get; set; }
+            internal bool LoopElement { get; set; }
             
             
-            public FieldNode Next { get; set; }
-            public FieldNode Previous { get; set; }
-            public FieldNode LoopFirst { get; set; } = null;
-            public FieldNode LoopLast { get; set; } = null;
+            internal FieldNode Next { get; set; }
+            internal FieldNode Previous { get; set; }
+            internal FieldNode LoopFirst { get; set; } = null;
+            internal FieldNode LoopLast { get; set; } = null;
             
             
             public FieldNode( FieldNode previous, FieldNode next, bool canHaveLoops = true)
@@ -43,6 +45,7 @@ public class Programm
                     int g =  rnd.Next(1, 7);
                     Snake = (1 == g);
                     Ladder = (2 == g);
+                    Freeze = (4 == g);
                 
 
                     HasLoop = ((3 == g) && canHaveLoops); // in loops kann es keine Loops geben 
@@ -104,10 +107,11 @@ public class Programm
         
         internal class Player{
             
-            public string Name;
-            public int Throws { get; set; } = 1;
-            public int Schritte  { get; set; } = 0;
-            public FieldNode? Position { get; set; } 
+            internal string Name;
+            internal int Throws { get; set; } = 1;
+            internal int Schritte  { get; set; } = 0;
+            internal FieldNode? Position { get; set; } 
+            internal bool IsFrozen {get;set;} = false;
             
 
             public Player(string name,FieldNode start)
@@ -127,7 +131,7 @@ public class Programm
         }
         
         
-         public void Spielen(string n1, string n2)
+         internal void Spielen(string n1, string n2)
         {
             
             int spielzug = 0;
@@ -136,6 +140,12 @@ public class Programm
             
             while (spieler[0].Position != last && spieler[1].Position != last)
             {
+                //falls Spieler gefreezed, überspringe diesen Spielzug
+                if(spieler[spielzug%2].IsFrozen) {
+                    System.Console.WriteLine($"{spieler[spielzug%2].Name} ist eingefroren");
+                    spieler[spielzug%2].IsFrozen = false;
+                    spielzug++;
+                }
                 int wurf = rnd.Next(1, 7);
                 spieler[spielzug % 2].Schritte += wurf;
 
@@ -151,6 +161,7 @@ public class Programm
                 
                 if (spieler[spielzug % 2].Position != last)// Nach dem Würfeln am Ende 
                 {
+                    if (spieler[spielzug%2].Position.Freeze) spieler[spielzug%2].IsFrozen = true; //Freezd Spieler wenn auf Freeze Feld am Ende
                     Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
                     Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
                 }
