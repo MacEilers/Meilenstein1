@@ -4,7 +4,7 @@ public class Programm
 {
     public static void Main(string[] args)
     {
-        int Spielfeldgroese = 1000;
+        int Spielfeldgroese = 100;
         GameField? GameField = new GameField(Spielfeldgroese);
         
         GameField.Spielen( "Spieler 1", "Spieler 2");
@@ -35,6 +35,7 @@ public class Programm
             public FieldNode LoopFirst { get; set; } = null;
             public FieldNode LoopLast { get; set; } = null;
             
+            
             public FieldNode( FieldNode previous, FieldNode next, bool canHaveLoops = true)
             {
 
@@ -42,19 +43,22 @@ public class Programm
                     int g =  rnd.Next(1, 7);
                     Snake = (1 == g);
                     Ladder = (2 == g);
-                    HasLoop = (3 == g);
-
+                
 
                     HasLoop = ((3 == g) && canHaveLoops); // in loops kann es keine Loops geben 
                     if (HasLoop)
                     {
-                        int n =  rnd.Next(1, 10);
-                        GameField? NewLoop = new GameField(n);
-                        LoopFirst= NewLoop.first;
-                        LoopLast = NewLoop.last;
+                        int n =  rnd.Next(3, 10);
+                        FieldNode loopFirst = null;
+                        FieldNode loopLast = null;
+                        
+                        CreateLoop(out loopFirst, out loopLast, n);
+                        LoopLast = loopLast;
+                        LoopFirst = loopFirst;
                         
                         LoopLast.Next = next;
                         LoopFirst.Previous = previous;
+
 
                     }
                    
@@ -65,8 +69,39 @@ public class Programm
                     
                     Next = next;
                     Previous = previous;
+
+                    void CreateLoop (out FieldNode LoopFirst, out FieldNode LoopLast, int size)
+
+                    {
+                        LoopFirst = null;
+                        LoopLast  = null;
+
+                        for (int i = 0; i < size; i++)
+
+                        {
+
+                            FieldNode node = new FieldNode(null, null, false);
+
+                            if (LoopFirst == null)
+                                LoopFirst = node;
+                            else
+                            {
+                                LoopLast.Next = node;
+
+                                node.Previous = LoopLast;
+
+                            }
+
+                            LoopLast = node;
+
+                        }
+
+                       
+
+                    }
             }
         }
+        
         internal class Player{
             
             public string Name;
@@ -204,7 +239,7 @@ public class Programm
 
             
             
-            if (f != last)  {
+             if (f != last)  {
                 
                 if (Anzahl > 1)
                 {
@@ -280,6 +315,11 @@ public class Programm
                 if (last == null)
                 {
                     first = newElement;
+                    if (first.HasLoop)
+                    {
+                        first.LoopLast.Next = newElement;
+                        first.LoopFirst.Previous = newElement;
+                    }
                 }
                 else
                 {
@@ -289,7 +329,7 @@ public class Programm
                         last.LoopLast.Next = newElement;
                     }
                 }
-
+                
                 last = newElement;
             }
             
@@ -306,13 +346,21 @@ public class Programm
             if (previous.Previous == null)
             {
                 first = newElement;
+                if (first.HasLoop)
+                {
+                    first.LoopFirst.Previous = first;
+                }
             }
             else
             {
                 previous.Previous.Next = newElement;
 
                 if (previous.Previous.HasLoop)
-                    previous.Previous.LoopFirst = newElement;
+                {
+                    previous.Previous.LoopLast.Next = newElement;
+                    
+                }
+                    
             }
 
             previous.Previous = newElement;
