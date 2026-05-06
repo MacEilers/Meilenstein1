@@ -139,9 +139,9 @@ public class Programm
             while (spieler[0].Position != last && spieler[1].Position != last)
             {
                 //falls Spieler gefreezed, überspringe diesen Spielzug
-                if(spieler[spielzug%2].IsFrozen) {
-                    Console.WriteLine($"{spieler[spielzug%2].Name} ist eingefroren");
-                    spieler[spielzug%2].IsFrozen = false;
+                if(spieler[spielzug].IsFrozen) {
+                    Console.WriteLine($"{spieler[spielzug].Name} ist eingefroren");
+                    spieler[spielzug].IsFrozen = false;
                     
                 }
                 else
@@ -149,19 +149,19 @@ public class Programm
                     
                 
                 int wurf = rnd.Next(1, 7);
-                spieler[spielzug % 2].Schritte += wurf;
+                spieler[spielzug].Schritte += wurf;
 
-                Console.WriteLine($"{spieler[spielzug % 2].Name} hat eine {wurf} gewürfeld");
+                Console.WriteLine($"{spieler[spielzug].Name} hat eine {wurf} gewürfeld");
                 if (wurf == 1)
                     Append(5);
                 if (wurf == 6)
-                    InsertBevor(spieler[spielzug % 2].Position,5);
+                    InsertBevor(spieler[spielzug].Position,5);
                 
                 
-                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,wurf) ;
+                spieler[spielzug].Position=Ziehen(spieler[spielzug].Position,spieler[spielzug ].Position,wurf) ;
 
                 
-                if (spieler[spielzug % 2].Position != last)// Nach dem Würfeln am Ende 
+                if (spieler[spielzug].Position != last)// Nach dem Würfeln am Ende 
                 {
                    
                     Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
@@ -172,26 +172,32 @@ public class Programm
                 
                 if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
                 {
-                    spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,1) ;
-                    spieler[spielzug % 2].Schritte -= 1;
+                    spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1) ;
+                    spieler[spielzug ].Schritte -= 1;
                    
                 }
                 
-                if (spieler[spielzug % 2].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
+                if (spieler[spielzug].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
-                    Console.WriteLine($"{spieler[spielzug % 2].Name} hat nach {spieler[spielzug % 2].Throws} Würfen mit {spieler[spielzug % 2].Schritte} Schritten Gewonnen ");
+                    Console.WriteLine($"{spieler[spielzug].Name} hat nach {spieler[spielzug].Throws} Würfen mit {spieler[spielzug].Schritte} Schritten Gewonnen ");
                     Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten Verloren  ");
 
                     return;
                 }
-                    if (spieler[spielzug%2].Position.Freeze) 
-                        spieler[spielzug%2].IsFrozen = true;
+                if (spieler[spielzug].Position.Freeze) 
+                        spieler[spielzug].IsFrozen = true;
                 }
 
 
-                spieler[spielzug % 2].Throws += 1;
+                spieler[spielzug].Throws += 1;
 
-                spielzug++;
+                if (spielzug == 0)
+                {
+                    spielzug = 1;
+                }
+                else
+                    spielzug = 0;
+
             }
             
             
@@ -206,14 +212,14 @@ public class Programm
        private void Leitern(Player[] spieler, int spielzug)
         {
             
-            if (spieler[spielzug % 2].Position.Ladder)
+            if (spieler[spielzug ].Position.Ladder)
             {
-                FieldNode helper = Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,3) ;
-                if (spieler[spielzug % 2].Position == helper)
+                FieldNode helper = Ziehen(spieler[spielzug ].Position,spieler[spielzug ].Position,3) ;
+                if (spieler[spielzug ].Position == helper)
                     return; 
-                spieler[spielzug % 2].Position = helper;// Leiter geht über des ende und wird deswegen nicht gegangen aber sonst rekusiv wieder ausgefürt -> fix Abbruch wenn nach gehen auf dems elben feld 
-                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
-                spieler[spielzug % 2].Schritte += 3;
+                spieler[spielzug ].Position = helper;// Leiter geht über des ende und wird deswegen nicht gegangen aber sonst rekusiv wieder ausgefürt -> fix Abbruch wenn nach gehen auf dems elben feld 
+                Console.WriteLine($"{spieler[spielzug ].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
+                spieler[spielzug ].Schritte += 3;
                 Leitern(spieler, spielzug);
                 
             }
@@ -223,13 +229,12 @@ public class Programm
         private void Schlangen(Player[] spieler, int spielzug)
         {
             
-             if  (spieler[spielzug % 2].Position.Snake)
+             if  (spieler[spielzug].Position.Snake)
              {
-                 //spieler[spielzug % 2].Position.Snake = false;
-                 // Neue schlange 
-                spieler[spielzug % 2].Position=ZurueckZiehen(spieler[spielzug % 2].Position,3);
-                spieler[spielzug % 2].Schritte -= 3;
-                Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Schlange 3 Felder zurück gegeangen ");
+                
+                spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,3);
+                spieler[spielzug ].Schritte -= 3;
+                Console.WriteLine($"{spieler[spielzug].Name} ist ein über eine Schlange 3 Felder zurück gegeangen ");
                 Schlangen(spieler, spielzug);
 
             }
