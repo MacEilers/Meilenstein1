@@ -186,14 +186,15 @@ public class Programm
         }
 
 
-        private void Leitern(Player[] spieler, int spielzug)
+       private void Leitern(Player[] spieler, int spielzug)
         {
             
             if (spieler[spielzug % 2].Position.Ladder)
             {
-                //spieler[spielzug % 2].Position.Ladder = false;
-                // new leder 
-                spieler[spielzug % 2].Position=Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,3) ;
+                FieldNode helper = Ziehen(spieler[spielzug % 2].Position,spieler[spielzug % 2].Position,3) ;
+                if (spieler[spielzug % 2].Position == helper)
+                    return; 
+                spieler[spielzug % 2].Position = helper;// Leiter geht über des ende und wird deswegen nicht gegangen aber sonst rekusiv wieder ausgefürt -> fix Abbruch wenn nach gehen auf dems elben feld 
                 Console.WriteLine($"{spieler[spielzug % 2].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
                 spieler[spielzug % 2].Schritte += 3;
                 Leitern(spieler, spielzug);
