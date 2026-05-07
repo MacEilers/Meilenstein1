@@ -24,6 +24,8 @@ public class Programm
         {
            
             internal bool Snake { set; get; }
+            
+            internal bool SwapPlayers { set; get; }
             internal bool Ladder { set; get; }
             internal bool Freeze {get; set;}
             internal bool HasLoop { get; set; }
@@ -36,11 +38,13 @@ public class Programm
             internal FieldNode LoopLast { get; set; } = null;
             
             
+            
             public FieldNode( FieldNode previous, FieldNode next, bool canHaveLoops = true)
             {
 
                     LoopElement = !canHaveLoops;
-                    int g =  rnd.Next(1, 7);
+                    int g =  rnd.Next(1, 10);
+                    SwapPlayers=  (5==rnd.Next(1,30));
                     Snake = (1 == g);
                     Ladder = (2 == g);
                     Freeze = (4 == g);
@@ -184,10 +188,27 @@ public class Programm
 
                     return;
                 }
-                if (spieler[spielzug].Position.Freeze) 
-                        spieler[spielzug].IsFrozen = true;
-                }
 
+                if (spieler[spielzug].Position.Freeze)
+                {
+                    spieler[spielzug].IsFrozen = true;
+                }
+                      
+
+
+                if (spieler[spielzug].Position.SwapPlayers)
+                {
+                    spieler[spielzug].Position.SwapPlayers = false;// Swap Felder sind nur einmalig Nutzbar 
+                    FieldNode h = spieler[spielzug].Position;
+                    spieler[spielzug].Position = spieler[(spielzug + 1) % 2].Position;
+                    spieler[(spielzug + 1) % 2].Position = h;
+                    
+                    
+                }
+                    
+                
+                }
+                
 
                 spieler[spielzug].Throws += 1;
 
@@ -254,7 +275,9 @@ public class Programm
 
            if (start == f && start.HasLoop) // Ziehen hat auf der Loop begnonnen 
            {
+               Console.WriteLine("Es Wurde eine Loop betreten");
                return Ziehen(start,f.LoopFirst, Anzahl - 1);
+               
                
                
                
