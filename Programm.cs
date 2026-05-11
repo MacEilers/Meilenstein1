@@ -156,7 +156,7 @@ public class Programm
                 int wurf = rnd.Next(1, 7);
                 spieler[spielzug].Schritte += wurf;
 
-                Console.WriteLine($"{spieler[spielzug].Name} hat eine {wurf} gewürfeld");
+                Console.WriteLine($"{spieler[spielzug].Name} hat eine {wurf} gewürfelt");
                 if (wurf == 1)
                     Append(5);
                 if (wurf == 6)
@@ -184,8 +184,8 @@ public class Programm
                 
                 if (spieler[spielzug].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
-                    Console.WriteLine($"{spieler[spielzug].Name} hat nach {spieler[spielzug].Throws} Würfen mit {spieler[spielzug].Schritte} Schritten Gewonnen ");
-                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten Verloren  ");
+                    Console.WriteLine($"{spieler[spielzug].Name} hat nach {spieler[spielzug].Throws} Würfen mit {spieler[spielzug].Schritte} Schritten gewonnen ");
+                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten verloren  ");
 
                     return;
                 }
@@ -240,7 +240,7 @@ public class Programm
                 if (spieler[spielzug ].Position == helper)
                     return; 
                 spieler[spielzug ].Position = helper;// Leiter geht über des ende und wird deswegen nicht gegangen aber sonst rekusiv wieder ausgefürt -> fix Abbruch wenn nach gehen auf dems elben feld 
-                Console.WriteLine($"{spieler[spielzug ].Name} ist ein über eine Leiter 3 Felder weiter gegeangen ");
+                Console.WriteLine($"{spieler[spielzug ].Name} ist ein über eine Leiter 3 Felder weiter gegangen ");
                 spieler[spielzug ].Schritte += 3;
                 Leitern(spieler, spielzug);
                 
@@ -256,7 +256,7 @@ public class Programm
                 
                 spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,3);
                 spieler[spielzug ].Schritte -= 3;
-                Console.WriteLine($"{spieler[spielzug].Name} ist ein über eine Schlange 3 Felder zurück gegeangen ");
+                Console.WriteLine($"{spieler[spielzug].Name} ist ein über eine Schlange 3 Felder zurück gegangen ");
                 Schlangen(spieler, spielzug);
 
             }
@@ -276,7 +276,7 @@ public class Programm
 
            if (start == f && start.HasLoop) // Ziehen hat auf der Loop begnonnen 
            {
-               Console.WriteLine("Es Wurde eine Loop betreten");
+               Console.WriteLine("Es wurde eine Loop betreten");
                return Ziehen(start,f.LoopFirst, Anzahl - 1);
                
                
