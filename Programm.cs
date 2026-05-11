@@ -23,19 +23,19 @@ public class Programm
         internal class FieldNode
         {
            
-            internal bool Snake { set; get; }
+            internal bool Snake { get; }
             
             internal bool SwapPlayers { set; get; }
-            internal bool Ladder { set; get; }
-            internal bool Freeze {get; set;}
-            internal bool HasLoop { get; set; }
+            internal bool Ladder {get; }
+            internal bool Freeze {get;}
+            internal bool HasLoop { get;  }
             internal bool LoopElement { get; set; }
             
             
             internal FieldNode Next { get; set; }
             internal FieldNode Previous { get; set; }
-            internal FieldNode LoopFirst { get; set; } = null;
-            internal FieldNode LoopLast { get; set; } = null;
+            internal FieldNode LoopFirst { get;  } 
+            internal FieldNode LoopLast { get; } 
             
             
             
@@ -54,8 +54,8 @@ public class Programm
                     if (HasLoop)
                     {
                         int n =  rnd.Next(3, 10);
-                        FieldNode loopFirst = null;
-                        FieldNode loopLast = null;
+                        FieldNode loopFirst ;
+                        FieldNode loopLast ;
                         
                         CreateLoop(out loopFirst, out loopLast, n);
                         LoopLast = loopLast;
@@ -75,35 +75,36 @@ public class Programm
                     Next = next;
                     Previous = previous;
 
-                    void CreateLoop (out FieldNode LoopFirst, out FieldNode LoopLast, int size)
-
-                    {
-                        LoopFirst = null;
-                        LoopLast  = null;
-
-                        for (int i = 0; i < size; i++)
-
-                        {
-
-                            FieldNode node = new FieldNode(null, null, false);
-
-                            if (LoopFirst == null)
-                                LoopFirst = node;
-                            else
-                            {
-                                LoopLast.Next = node;
-
-                                node.Previous = LoopLast;
-
-                            }
-
-                            LoopLast = node;
-
-                        }
+                    
 
                        
 
                     }
+            internal void CreateLoop (out FieldNode LoopFirst, out FieldNode LoopLast, int size)
+
+            {
+                LoopFirst = null;
+                LoopLast  = null;
+
+                for (int i = 0; i < size; i++)
+
+                {
+
+                    FieldNode node = new FieldNode(null, null, false);
+
+                    if (LoopFirst == null)
+                        LoopFirst = node;
+                    else
+                    {
+                        LoopLast.Next = node;
+
+                        node.Previous = LoopLast;
+
+                    }
+
+                    LoopLast = node;
+
+                }
             }
         }
         
