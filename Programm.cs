@@ -186,17 +186,17 @@ public class Programm
                     System.Console.WriteLine("");
                     System.Console.WriteLine("Auf dem Feld steht schon jemand! Kämpfe um dein Leben!!");
                 
-                    System.Console.WriteLine("Spieler 1: Zum würfeln Enter drücken...");
+                    System.Console.WriteLine($"S{n1}: Zum würfeln Enter drücken...");
                     Console.ReadLine();
-                    System.Console.WriteLine("Spieler 1 würfelt...");
+                    System.Console.WriteLine($"{n1} würfelt...");
                     int sp1 = GetCryptographicRandom(1,7);
-                    System.Console.WriteLine($"Spieler 1 hat eine {sp1} gewürfelt");
+                    System.Console.WriteLine($"{n1} hat eine {sp1} gewürfelt");
 
-                    System.Console.WriteLine("Spieler 2: Zum würfeln Enter drücken...");
+                    System.Console.WriteLine($"{n2}: Zum würfeln Enter drücken...");
                     Console.ReadLine();
-                    System.Console.WriteLine("Spieler 2 würfelt...");
+                    System.Console.WriteLine($"{n2 würfelt...");
                     int sp2 = GetCryptographicRandom(1,7);
-                    System.Console.WriteLine($"Spieler 2 hat eine {sp2} gewürfelt");
+                    System.Console.WriteLine($$"{n2 hat eine {sp2} gewürfelt");
                     System.Console.WriteLine("");
                     
                     if (sp1 < sp2)
