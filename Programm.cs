@@ -1,5 +1,7 @@
 namespace ConsoleApp3;
 using System;
+using System.Security.Cryptography;
+
 public class Programm
 {
     public static void Main(string[] args)
@@ -18,7 +20,11 @@ public class Programm
     {
         // Internal class:
 
-        private static Random rnd = new Random();
+        public static int GetCryptographicRandom(int min, int max)
+        {
+            return RandomNumberGenerator.GetInt32(min, max);
+
+        }
          
         internal class FieldNode
         {
@@ -43,8 +49,8 @@ public class Programm
             {
 
                     LoopElement = !canHaveLoops;
-                    int g =  rnd.Next(1, 10);
-                    SwapPlayers=  (5==rnd.Next(1,30));
+                    int g =  GetCryptographicRandom(1, 10);
+                    SwapPlayers=  (5==GetCryptographicRandom(1,30));
                     Snake = (1 == g);
                     Ladder = (2 == g);
                     Freeze = (4 == g);
@@ -53,7 +59,7 @@ public class Programm
                     HasLoop = ((3 == g) && canHaveLoops); // in loops kann es keine Loops geben 
                     if (HasLoop)
                     {
-                        int n =  rnd.Next(3, 10);
+                        int n =  GetCryptographicRandom(3, 10);
                         FieldNode loopFirst ;
                         FieldNode loopLast ;
                         
@@ -153,7 +159,7 @@ public class Programm
                 {
                     
                 
-                int wurf = rnd.Next(1, 7);
+                int wurf = GetCryptographicRandom(1, 7);
                 spieler[spielzug].Schritte += wurf;
 
                 Console.WriteLine($"{spieler[spielzug].Name} hat eine {wurf} gewürfelt");
@@ -177,8 +183,43 @@ public class Programm
                 
                 if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
                 {
-                    spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1) ;
-                    spieler[spielzug ].Schritte -= 1;
+                    System.Console.WriteLine("");
+                    System.Console.WriteLine("Auf dem Feld steht schon jemand! Kämpfe um dein Leben!!");
+                
+                    System.Console.WriteLine("Spieler 1: Zum würfeln Enter drücken...");
+                    Console.ReadLine();
+                    System.Console.WriteLine("Spieler 1 würfelt...");
+                    int sp1 = GetCryptographicRandom(1,7);
+                    System.Console.WriteLine($"Spieler 1 hat eine {sp1} gewürfelt");
+
+                    System.Console.WriteLine("Spieler 2: Zum würfeln Enter drücken...");
+                    Console.ReadLine();
+                    System.Console.WriteLine("Spieler 2 würfelt...");
+                    int sp2 = GetCryptographicRandom(1,7);
+                    System.Console.WriteLine($"Spieler 2 hat eine {sp2} gewürfelt");
+                    System.Console.WriteLine("");
+                    
+                    if (sp1 < sp2)
+                    {
+                       System.Console.WriteLine($"Spieler 2 hat gewonnen! Spieler 1 wird um {(sp2-sp1)} Felder zurückgeworfen!");
+                       spieler[0].Position = ZurueckZiehen(spieler[0].Position, (sp2-sp1));
+                       spieler[0].Schritte -= (sp2-sp1);
+
+                    } else if(sp2 < sp1)
+                        {
+                            System.Console.WriteLine($"Spieler 1 hat gewonnen! Spieler 2 wird um {(sp1-sp2)} Felder zurückgeworfen!");
+                            spieler[1].Position = ZurueckZiehen(spieler[1].Position, (sp1-sp2));
+                            spieler[1].Schritte -= (sp1-sp2);
+
+                        } else
+                        {
+                            System.Console.WriteLine("Unentschieden!");
+                            spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1) ;
+                            spieler[spielzug ].Schritte -= 1;
+                        }
+
+
+                    
                    
                 }
                 
@@ -212,13 +253,14 @@ public class Programm
                 
 
                 spieler[spielzug].Throws += 1;
-
-                if (spielzug == 0)
+                spielzug = spielzug == 0 ? 1 : 0;
+              /*  if (spielzug == 0)
                 {
                     spielzug = 1;
                 }
                 else
                     spielzug = 0;
+        */
 
             }
             
