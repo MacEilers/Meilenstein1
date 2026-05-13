@@ -29,10 +29,10 @@ public class Programm
         internal class FieldNode
         {
            
-            internal bool Snake { get; }
+            internal bool Snake { get; set; }
             
             internal bool SwapPlayers { set; get; }
-            internal bool Ladder {get; }
+            internal bool Ladder {get; set; }
             internal bool Freeze {get;}
             internal bool HasLoop { get;  }
             internal bool LoopElement { get; set; }
@@ -175,8 +175,8 @@ public class Programm
                 if (spieler[spielzug].Position != last)// Nach dem Würfeln am Ende 
                 {
                    
-                    Schlangen(spieler, spielzug);// Bewegt sich rekusiv über Schlangen zurück .
-                    Leitern(spieler, spielzug);// Falls am ende auf einer Leiter landet Geht wieder leitern hoch 
+                    SchlangenUndLeitern(spieler, spielzug);
+                     
                     
                 }
                 
@@ -186,7 +186,7 @@ public class Programm
                     System.Console.WriteLine("");
                     System.Console.WriteLine("Auf dem Feld steht schon jemand! Kämpfe um dein Leben!!");
                 
-                    System.Console.WriteLine($"S{n1}: Zum würfeln Enter drücken...");
+                    System.Console.WriteLine($"{n1}: Zum würfeln Enter drücken...");
                     Console.ReadLine();
                     System.Console.WriteLine($"{n1} würfelt...");
                     int sp1 = GetCryptographicRandom(1,7);
@@ -194,10 +194,11 @@ public class Programm
 
                     System.Console.WriteLine($"{n2}: Zum würfeln Enter drücken...");
                     Console.ReadLine();
-                    System.Console.WriteLine($"{n2 würfelt...");
+                    System.Console.WriteLine($"{n2} würfelt...");
                     int sp2 = GetCryptographicRandom(1,7);
-                    System.Console.WriteLine($$"{n2 hat eine {sp2} gewürfelt");
-                    System.Console.WriteLine("");
+                    System.Console.WriteLine($"{n2} hat eine {sp2} gewürfelt");
+                    
+                   
                     
                     if (sp1 < sp2)
                     {
@@ -211,13 +212,14 @@ public class Programm
                             spieler[1].Position = ZurueckZiehen(spieler[1].Position, (sp1-sp2));
                             spieler[1].Schritte -= (sp1-sp2);
 
+                            
                         } else
                         {
                             System.Console.WriteLine("Unentschieden!");
                             spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1) ;
                             spieler[spielzug ].Schritte -= 1;
                         }
-
+                    Console.ReadLine();
 
                     
                    
@@ -273,52 +275,51 @@ public class Programm
         }
 
 
-       private void Leitern(Player[] spieler, int spielzug)
+       private void SchlangenUndLeitern(Player[] spieler, int spielzug)
         {
+            // Wenn S oder L ausgeführt wird, löscht sich die L/S
             
             if (spieler[spielzug ].Position.Ladder)
             {
+                spieler[spielzug].Position.Ladder = false;
                 FieldNode helper = Ziehen(spieler[spielzug ].Position,spieler[spielzug ].Position,3) ;
                 if (spieler[spielzug ].Position == helper)
                     return; 
                 spieler[spielzug ].Position = helper;// Leiter geht über des ende und wird deswegen nicht gegangen aber sonst rekusiv wieder ausgefürt -> fix Abbruch wenn nach gehen auf dems elben feld 
-                Console.WriteLine($"{spieler[spielzug ].Name} ist ein über eine Leiter 3 Felder weiter gegangen ");
+                Console.WriteLine($"        {spieler[spielzug ].Name} ist ein über eine Leiter 3 Felder weiter gegangen ");
                 spieler[spielzug ].Schritte += 3;
-                Leitern(spieler, spielzug);
                 
+                SchlangenUndLeitern(spieler, spielzug);
+                
+            }
+            else if  (spieler[spielzug].Position.Snake)
+            {
+                spieler[spielzug].Position.Snake = false;
+                spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,3);
+                spieler[spielzug ].Schritte -= 3;
+                Console.WriteLine($"        {spieler[spielzug].Name} ist ein über eine Schlange 3 Felder zurück gegangen ");
+                SchlangenUndLeitern(spieler, spielzug);
+
             }
         }
 
         
-        private void Schlangen(Player[] spieler, int spielzug)
-        {
-            
-             if  (spieler[spielzug].Position.Snake)
-             {
-                
-                spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,3);
-                spieler[spielzug ].Schritte -= 3;
-                Console.WriteLine($"{spieler[spielzug].Name} ist ein über eine Schlange 3 Felder zurück gegangen ");
-                Schlangen(spieler, spielzug);
-
-            }
-            
-            
-
-        }
+        
        
         
         
 
         private FieldNode Ziehen(FieldNode start ,FieldNode f,int Anzahl)
         {
-
-
+            if(f.Next == null&& f!= last)
+                throw new ArgumentNullException("Null Pointer");
+            
+            
            // Implementierung ziehen in Loops
 
            if (start == f && start.HasLoop) // Ziehen hat auf der Loop begnonnen 
            {
-               Console.WriteLine("Es wurde eine Loop betreten");
+               Console.WriteLine("      Es wurde eine Loop betreten");
                return Ziehen(start,f.LoopFirst, Anzahl - 1);
                
                
@@ -343,6 +344,7 @@ public class Programm
             }
             else
             {
+                
                 return ((Anzahl>1)?start:last);
             }
             
