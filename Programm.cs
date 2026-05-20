@@ -1,4 +1,4 @@
-namespace ConsoleApp3;
+
 using System;
 using System.Security.Cryptography;
 
@@ -24,6 +24,167 @@ public class Programm
         {
             return RandomNumberGenerator.GetInt32(min, max);
 
+        }
+
+        // Visualizer-Klasse für grafische Darstellung
+        internal class BoardVisualizer
+        {
+            private GameField gameField;
+            private int totalFields;
+            private Dictionary<FieldNode, int> fieldPositions = new Dictionary<FieldNode, int>();
+
+            internal BoardVisualizer(GameField field, int total)
+            {
+                gameField = field;
+                totalFields = total;
+            }
+
+            private void BuildFieldPositions()
+            {
+                fieldPositions.Clear();
+                FieldNode current = gameField.first;
+                    int position = 1;
+
+                while (current != null) 
+                {
+                    if (!fieldPositions.ContainsKey(current))
+                    {
+                        fieldPositions[current] = position;
+                    }
+                        
+                    current = current.Next;
+                    position++;
+                }
+            }
+
+            internal int GetFieldPosition(FieldNode? node)
+            {
+                if (node == null || !fieldPositions.TryGetValue(node, out int pos))
+                    return -1;
+                return pos;
+            }
+
+            internal void DisplayBoard(Player[] players)
+            {
+                BuildFieldPositions(); // Aktualisiere Positionen vor dem Anzeigen
+                
+                int maxFields = fieldPositions.Count > 0 ? fieldPositions.Values.Max() : 100;
+                int maxRows = (maxFields + 9) / 10;
+                
+                Console.Clear();
+                Console.WriteLine("╔════════════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                       OOP-Meilenstein 1                        ║");
+                Console.WriteLine("╚════════════════════════════════════════════════════════════════╝\n");
+
+                // Display status bar
+                int pos1 = GetFieldPosition(players[0].Position);
+                int pos2 = GetFieldPosition(players[1].Position);
+                
+                string pos1Text = (pos1 == -1) ? "Tunnel" : pos1.ToString(); // Falls Spieler in Tunnel? Position = Tunnel
+                string pos2Text = (pos2 == -1) ? "Tunnel" : pos2.ToString();
+
+                Console.WriteLine($"  {players[0].Name}: Feld {pos1Text}/{maxFields} (Würfe: {players[0].Throws}, Schritte: {players[0].Schritte})");
+                Console.WriteLine($"  {players[1].Name}: Feld {pos2Text}/{maxFields} (Würfe: {players[1].Throws}, Schritte: {players[1].Schritte})");
+                Console.WriteLine("\n  Legende: 🐪 Spieler 1 │ 🐘 Spieler 2 │ 🐍 Schlange │🪜  Leiter │ ❄️  Einfrieren │ 🔁 Spieler-Tausch | 🕳️  Tunnel\n");
+
+                // Dynamisches Spielfeld:
+                for (int row = maxRows; row >= 1; row--)
+                {
+                    Console.Write("  ");
+                    for (int col = 1; col <= 10; col++)
+                    {
+                        int fieldNum = CalculateFieldNumber(row, col);
+                        if (fieldNum<= maxFields)
+                            DisplayFieldCell(fieldNum, players);
+                        else
+                            Console.Write("[  ]");
+                    }
+                    int rangeStart  =(row - 1) * 10 + 1;
+                    int rangeEnd;
+                    if(row *10 < maxFields)
+                    {
+                        rangeEnd = row*10;
+                    }
+                    else
+                    {
+                        rangeEnd = maxFields;
+                    }
+                        
+                    
+                    Console.WriteLine($"  [{rangeStart:D2}-{rangeEnd:D2}]");
+                }
+
+                Console.WriteLine();
+            }
+
+            private int CalculateFieldNumber(int row, int col)
+            {
+               
+                if (row % 2 == 0)
+                {
+                    return row * 10 - col + 1;
+                }
+                else
+                {
+                    return (row - 1) * 10 + col;
+                }
+            }
+
+            private void DisplayFieldCell(int fieldNum, Player[] players)
+            {
+                FieldNode? node = GetNodeByPosition(fieldNum);
+                
+                if (node == null)
+                {
+                    Console.Write("[  ]");
+                    return;
+                }
+
+                string cellContent = $"{fieldNum:D2}";
+                string displayChar;
+
+                // wenn zwei auf einem Feld sind
+                if (players[0].Position  == node && players[1].Position == node)
+                    displayChar = "⚔ ";
+                else if (players[0].Position == node)
+                    displayChar = "🐪";
+                else if (players[1].Position == node)
+                    displayChar = "🐘";
+                else if (node.Snake)
+                    displayChar = "🐍";
+                else if (node.Ladder)
+                    displayChar = "🪜 ";
+                else if (node.Freeze)
+                    displayChar = "❄️ ";
+                else if (node.HasLoop)
+                    displayChar = "🕳️ ";
+                else if (node.SwapPlayers)
+                    displayChar = "🔁";
+                else
+                    displayChar = "  ";
+
+                if (displayChar != " ")
+                    Console.Write($"[{displayChar}]");
+                else
+                    Console.Write($"[{cellContent}]");
+            }
+
+            private FieldNode? GetNodeByPosition(int position)
+            {
+                // Finde den Knoten durch direkte Iteration
+                FieldNode? current = gameField.first;
+                int pos = 1;
+
+                while (current != null && pos <= position)
+                {
+                    if (pos == position)
+                        return current;
+                    current = current.Next;
+                    pos++;
+                }
+
+                return null;
+            }
         }
          
         internal class FieldNode
@@ -145,7 +306,13 @@ public class Programm
             
             int spielzug = 0;
 
-            Player[] spieler ={new Player(n1,first),new Player(n2,first)};
+            Player[] spieler ={new Player(n1,first!),new Player(n2,first!)};
+            
+            // Visualizer initialisieren
+            BoardVisualizer visualizer = new BoardVisualizer(this, 100);
+            visualizer.DisplayBoard(spieler);
+            Console.WriteLine("\nSpiel startet! Drücke Enter...");
+            Console.ReadLine();
             
             while (spieler[0].Position != last && spieler[1].Position != last)
             {
@@ -166,10 +333,10 @@ public class Programm
                 if (wurf == 1)
                     Append(5);
                 if (wurf == 6)
-                    InsertBevor(spieler[spielzug].Position,5);
+                    InsertBevor(spieler[spielzug].Position!,5);
                 
                 
-                spieler[spielzug].Position=Ziehen(spieler[spielzug].Position,spieler[spielzug ].Position,wurf) ;
+                spieler[spielzug].Position=Ziehen(spieler[spielzug].Position!,spieler[spielzug ].Position!,wurf) ;
 
                 
                 if (spieler[spielzug].Position != last)// Nach dem Würfeln am Ende 
@@ -180,6 +347,10 @@ public class Programm
                     
                 }
                 
+                // Board nach Zug anzeigen
+                visualizer.DisplayBoard(spieler);
+                Console.WriteLine("\nDrücke Enter für nächsten Zug...");
+                Console.ReadLine();
                 
                 if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
                 {
@@ -219,6 +390,9 @@ public class Programm
                             spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1) ;
                             spieler[spielzug ].Schritte -= 1;
                         }
+                    
+                    // Board nach Kampf anzeigen
+                    visualizer.DisplayBoard(spieler);
                     Console.ReadLine();
 
                     
@@ -227,9 +401,11 @@ public class Programm
                 
                 if (spieler[spielzug].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
-                    Console.WriteLine($"{spieler[spielzug].Name} hat nach {spieler[spielzug].Throws} Würfen mit {spieler[spielzug].Schritte} Schritten gewonnen ");
-                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten verloren  ");
-
+                    visualizer.DisplayBoard(spieler);
+                    Console.WriteLine($"\n{'═'*70}");
+                    Console.WriteLine($"{spieler[spielzug].Name} hat nach {spieler[spielzug].Throws} Würfen mit {spieler[spielzug].Schritte} Schritten gewonnen!");
+                    Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten verloren!");
+                    Console.WriteLine($"{'═'*70}\n");
                     return;
                 }
 
@@ -378,8 +554,8 @@ public class Programm
         
         // Data fields:
 
-        FieldNode? first = null;
-        FieldNode? last = null;
+        internal FieldNode? first = null;
+        internal FieldNode? last = null;
 
         // Read-only properties:
 
