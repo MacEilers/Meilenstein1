@@ -392,10 +392,10 @@ class GameField
                 if (spieler[spielzug].Position == last)// Wenn Er durch Leiter aufs Letzte feld gekommen ist 
                 {
                     visualizer.DisplayBoard(spieler);
-                    Console.WriteLine($"\n{'═'*70}");
+                    
                     Console.WriteLine($"{spieler[spielzug].Name} hat nach {spieler[spielzug].Throws} Würfen mit {spieler[spielzug].Schritte} Schritten gewonnen!");
                     Console.WriteLine($"{spieler[(1+spielzug) % 2].Name} hat nach {spieler[(1+spielzug) % 2].Throws} Würfen mit {spieler[(1+spielzug) % 2].Schritte} Schritten verloren!");
-                    Console.WriteLine($"{'═'*70}\n");
+                   
                     return;
                 }
 
