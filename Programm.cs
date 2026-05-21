@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 
 public class Programm
@@ -187,6 +189,7 @@ public class Programm
             }
         }
          
+        
         internal class FieldNode
         {
            
@@ -370,25 +373,26 @@ public class Programm
                     System.Console.WriteLine($"{n2} hat eine {sp2} gewürfelt");
                     
                    
-                    
+                    int Schritaenderung = 0;
                     if (sp1 < sp2)
                     {
                        System.Console.WriteLine($"Spieler 2 hat gewonnen! Spieler 1 wird um {(sp2-sp1)} Felder zurückgeworfen!");
-                       spieler[0].Position = ZurueckZiehen(spieler[0].Position, (sp2-sp1));
-                       spieler[0].Schritte -= (sp2-sp1);
+                       spieler[0].Position = ZurueckZiehen(spieler[0].Position, (sp2-sp1),ref Schritaenderung);
+                       spieler[0].Schritte -= Schritaenderung;
 
                     } else if(sp2 < sp1)
                         {
                             System.Console.WriteLine($"Spieler 1 hat gewonnen! Spieler 2 wird um {(sp1-sp2)} Felder zurückgeworfen!");
-                            spieler[1].Position = ZurueckZiehen(spieler[1].Position, (sp1-sp2));
-                            spieler[1].Schritte -= (sp1-sp2);
+                            spieler[1].Position = ZurueckZiehen(spieler[1].Position, (sp1-sp2),ref Schritaenderung);
+                            spieler[1].Schritte -=  Schritaenderung;
 
                             
                         } else
                         {
                             System.Console.WriteLine("Unentschieden!");
-                            spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1) ;
-                            spieler[spielzug ].Schritte -= 1;
+                           
+                            spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,1, ref Schritaenderung) ;
+                            spieler[spielzug ].Schritte -= Schritaenderung;
                         }
                     
                     // Board nach Kampf anzeigen
@@ -470,9 +474,10 @@ public class Programm
             }
             else if  (spieler[spielzug].Position.Snake)
             {
+                int Schritaenderung = 0;
                 spieler[spielzug].Position.Snake = false;
-                spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,3);
-                spieler[spielzug ].Schritte -= 3;
+                spieler[spielzug ].Position=ZurueckZiehen(spieler[spielzug ].Position,3,ref Schritaenderung);
+                spieler[spielzug ].Schritte -= Schritaenderung;
                 Console.WriteLine($"        {spieler[spielzug].Name} ist ein über eine Schlange 3 Felder zurück gegangen ");
                 SchlangenUndLeitern(spieler, spielzug);
 
@@ -525,9 +530,9 @@ public class Programm
             }
             
         }
-        private FieldNode ZurueckZiehen(FieldNode f,int Anzahl)
+        private FieldNode ZurueckZiehen(FieldNode f,int Anzahl, ref int TotalFieldsMoved)
         {
-            
+
             
             
             if (f != first )
@@ -535,7 +540,8 @@ public class Programm
                 
                 if (Anzahl > 1)
                 {
-                    return ZurueckZiehen(f.Previous, Anzahl - 1);
+                    TotalFieldsMoved++;
+                    return ZurueckZiehen(f.Previous, Anzahl - 1,ref TotalFieldsMoved);
                 }
                 else
                 {
