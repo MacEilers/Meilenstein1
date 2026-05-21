@@ -234,6 +234,10 @@ public class Programm
                         LoopLast.Next = next;
                         LoopFirst.Previous = previous;
 
+                        // Es wird eine LinkedList Erstelt von f geht zeiger in die Loop 
+                        // Loop selbst zeigt auf f.prev und f.next
+                        
+
 
                     }
                    
@@ -355,7 +359,7 @@ public class Programm
                 Console.WriteLine("\nDrücke Enter für nächsten Zug...");
                 Console.ReadLine();
                 
-                if (gleichesFeld(spieler))// Wenn gleiches Fled Gehe ein zurück
+                if (gleichesFeld(spieler))// Wenn gleiches Fled MiniGame wer stehen bleiben kann und wer zurück ziehen muss 
                 {
                     System.Console.WriteLine("");
                     System.Console.WriteLine("Auf dem Feld steht schon jemand! Kämpfe um dein Leben!!");
@@ -372,7 +376,7 @@ public class Programm
                     int sp2 = GetCryptographicRandom(1,7);
                     System.Console.WriteLine($"{n2} hat eine {sp2} gewürfelt");
                     
-                   
+                    //Verlierer muss um die Differenz zurück ziehen 
                     int Schritaenderung = 0;
                     if (sp1 < sp2)
                     {
@@ -435,7 +439,7 @@ public class Programm
                 
 
                 spieler[spielzug].Throws += 1;
-                spielzug = spielzug == 0 ? 1 : 0;
+                spielzug = spielzug == 0 ? 1 : 0; // Spieler wechsel 
               /*  if (spielzug == 0)
                 {
                     spielzug = 1;
@@ -455,9 +459,10 @@ public class Programm
         }
 
 
-       private void SchlangenUndLeitern(Player[] spieler, int spielzug)
+       private void SchlangenUndLeitern(Player[] spieler, int spielzug) // Am Anfang und Ende könen L/S sein allerdings werden diese nie ausgeführt um eine Null Pointer zu vermeiden 
         {
             // Wenn S oder L ausgeführt wird, löscht sich die L/S
+           // Rekusiver aufruf von dem neuen Feld aus 
             
             if (spieler[spielzug ].Position.Ladder)
             {
@@ -492,11 +497,11 @@ public class Programm
 
         private FieldNode Ziehen(FieldNode start ,FieldNode f,int Anzahl)
         {
-            if(f.Next == null&& f!= last)
+            if(f.Next == null&& f!= last) 
                 throw new ArgumentNullException("Null Pointer");
             
             
-           // Implementierung ziehen in Loops
+           // Implementierung ziehen in Loops - Wenn Ziehen begint und das feld auf dem ich mich befinde ein Loop hat 
 
            if (start == f && start.HasLoop) // Ziehen hat auf der Loop begnonnen 
            {
@@ -514,7 +519,7 @@ public class Programm
                 
                 if (Anzahl > 1)
                 {
-                    return Ziehen(start,f.Next, Anzahl - 1);
+                    return Ziehen(start,f.Next, Anzahl - 1); // Rekusiver aufruf
                 }
                 else
                 {
@@ -537,10 +542,10 @@ public class Programm
             
             if (f != first )
             {
-                
+                 TotalFieldsMoved++;// Um für die ausgabe sagen zu können wie weit ich gegangen bin
                 if (Anzahl > 1)
                 {
-                    TotalFieldsMoved++;
+                   
                     return ZurueckZiehen(f.Previous, Anzahl - 1,ref TotalFieldsMoved);
                 }
                 else
@@ -550,7 +555,7 @@ public class Programm
                 
                 
             }
-            else
+            else // Zieht immer zurück falls, falls wieder am start angekomen wrid bleibt er dort stehen 
             {
                 return first;
             }
