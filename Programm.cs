@@ -8,7 +8,12 @@ public class Programm
 {
     public static void Main(string[] args)
     {
-        int Spielfeldgroese = 100;
+        
+    // Ausgabe erfolgt mit Emojis.
+
+    // Je nach Betriebssystem kann die Darstellung abweichen.
+        
+        int Spielfeldgroese = 20;
 
         GameField? GameField = new GameField(Spielfeldgroese);
         
